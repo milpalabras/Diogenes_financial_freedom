@@ -434,3 +434,4 @@ pip-selfcheck.json
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/django,node,python,virtualenv,visualstudiocode,dotenv
+.vscode/tasks.json
