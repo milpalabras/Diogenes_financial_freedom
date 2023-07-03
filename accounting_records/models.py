@@ -65,7 +65,7 @@ class Category(MPTTModel):
     class Meta:
         ordering = ['-created_at']
         verbose_name = 'Category'
-    verbose_name_plural = 'Categories'
+        verbose_name_plural = 'Categories'
 
     def get_parent(self):
         return self.parent
