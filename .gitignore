@@ -436,3 +436,9 @@ pip-selfcheck.json
 
 # End of https://www.toptal.com/developers/gitignore/api/django,node,python,virtualenv,visualstudiocode,dotenv
 .vscode/tasks.json
+account.json
+categories.json
+customers.json
+method_of_payments.json
+records.json
+users.json
