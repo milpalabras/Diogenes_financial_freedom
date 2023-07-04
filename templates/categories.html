@@ -1,0 +1,16 @@
+{% load mptt_tags %}
+
+<ul class="root">
+    {% recursetree categories %}
+        <li>
+            {{ node.name }}
+            {% if node.category_type != 'C' %} - {{node.get_category_type_display}} {% endif %}
+            {% if not node.is_leaf_node %}
+                <ul class="">
+                    {{ children }} 
+                </ul>
+            {% endif %}
+        </li>
+    {% endrecursetree %}
+    
+</ul>

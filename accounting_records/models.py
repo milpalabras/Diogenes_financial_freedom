@@ -43,7 +43,7 @@ class Category(MPTTModel):
     '''Category model for save the categories of the user'''
     owner = models.ForeignKey(User, related_name='categories', on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
-    description = models.TextField(blank=True)
+    description = models.TextField(blank=True, null=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', related_query_name='subcategorie')
     class CategoryType (models.TextChoices):
         FIJO ='F', _('Gasto Fijo(Obligatorio)')
