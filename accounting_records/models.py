@@ -6,11 +6,17 @@ from django.utils.translation import gettext_lazy as _
 
 
 # Create your models here.
+class DiogenesModel(models.Model):
+    '''Abstract model for save the common fields of the models'''
+    owner = models.ForeignKey(User, related_name='%(class)s_related', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        abstract = True
 
-
-class Account(models.Model):
-    '''Account model for save the accounts of the user'''
-    owner = models.ForeignKey(User, related_name='accounts', on_delete=models.CASCADE)
+class Account(DiogenesModel):
+    '''Account model for save the accounts of the user'''    
     name = models.CharField(max_length=255)
     class AccountType (models.TextChoices):
         GENERAL = 'GRAL', _('General')
@@ -26,9 +32,7 @@ class Account(models.Model):
         OTRO = 'OTRO', _('Otro')
     account_type = models.CharField(max_length=4, choices=AccountType.choices, default=AccountType.GENERAL)
     amount = models.DecimalField(max_digits=50, decimal_places=2, validators=[MinValueValidator(0.00)])
-    description = models.TextField(blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    description = models.TextField(blank=True)    
     
     def __str__(self):
         return self.name
@@ -37,11 +41,11 @@ class Account(models.Model):
         ordering = ['-created_at']
         verbose_name = 'Account'
         verbose_name_plural = 'Accounts'
+        
 
 
-class Category(MPTTModel):
-    '''Category model for save the categories of the user'''
-    owner = models.ForeignKey(User, related_name='categories', on_delete=models.CASCADE)
+class Category(MPTTModel, DiogenesModel):
+    '''Category model for save the categories of the user'''    
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children', related_query_name='subcategorie')
@@ -53,8 +57,6 @@ class Category(MPTTModel):
         PADRE = 'C',_('Categoria Padre (admin)')       
 
     category_type = models.CharField(max_length=1, choices=CategoryType.choices, default=CategoryType.FIJO)    
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
     
     def __str__(self):
         return self.name
@@ -79,9 +81,9 @@ class Category(MPTTModel):
     def get_all_children_id(self):
         return self.get_descendants(include_self=True).values_list('id', flat=True)
     
-class Records(models.Model):
+class Records(DiogenesModel):
     '''Records model for save the records of income and expense by user'''
-    owner = models.ForeignKey(User,related_name='records', on_delete=models.CASCADE)
+   
     class RecordType (models.TextChoices):
         GASTO = 'GAST', _('Gasto')
         INGRESO ='INGR', _('Ingreso')
@@ -93,10 +95,7 @@ class Records(models.Model):
     category_id = models.ForeignKey("Category", on_delete=models.SET_NULL, null=True)
     account_id = models.ForeignKey('Account', on_delete=models.SET_NULL, null=True)
     method_of_payment_id = models.ForeignKey('MethodOfPayment', on_delete=models.CASCADE, null=True, blank=True)    
-    voucher = models.FileField(upload_to='vouchers/', null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    
+    voucher = models.FileField(upload_to='vouchers/', null=True, blank=True)    
 
     class Meta:
         verbose_name_plural = "Registros"
@@ -178,10 +177,9 @@ class Records(models.Model):
                         total_incomes[-1] += record.amount
         return total_expenses, total_incomes
 
-class MethodOfPayment (models.Model):
-    '''Method of payment model for save the methods of payment of the user'''
+class MethodOfPayment (DiogenesModel):
+    '''Method of payment model for save the methods of payment of the user'''    
     
-    owner = models.ForeignKey(User, on_delete=models.CASCADE,null=True, blank=True)
     name = models.CharField(max_length=255)
     class Meta:
         verbose_name_plural="Forma de pagos"
