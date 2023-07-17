@@ -16,7 +16,7 @@ class AccountTestCase(TestCase):
         self.assertEqual(account.name, 'test')
         self.assertEqual(account.amount, 1000)
         self.assertEqual(account.owner.username, 'test')
-        self.assertEqual(self.user.accounts.all()[0].name, 'test')
+        self.assertEqual(self.user.account_related.all()[0].name, 'test')
 
 
 class CategoryTestCase(TestCase):
