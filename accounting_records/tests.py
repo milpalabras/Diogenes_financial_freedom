@@ -7,16 +7,34 @@ class AccountTestCase(TestCase):
     @classmethod
     def setUpTestData(cls):        
         cls.user = User.objects.create_user(username='test', password='test')
-
+    
     def setUp(self):
-        Account.objects.create(name="test", amount=1000, owner=self.user)
+        self.account_data = {
+            'name': 'test',
+            'amount': 1000,
+            'account_type': 'GRAL',
+            'owner': self.user
+        }
+    
+        
 
-    def test_account(self):
-        account = Account.objects.get(name="test")
+    def test_SaveAccount(self):
+        account = Account(**self.account_data)
+        account.save()
         self.assertEqual(account.name, 'test')
         self.assertEqual(account.amount, 1000)
-        self.assertEqual(account.owner.username, 'test')
-        self.assertEqual(self.user.accounts.all()[0].name, 'test')
+        self.assertEqual(account.account_type, 'GRAL')
+        self.assertEqual(account.owner, self.user)
+    
+    def test_SaveAccount_without_name(self):
+        del self.account_data['name']
+        account = Account(**self.account_data)
+        with self.assertRaises(ValueError):
+            account.save()
+        
+       
+        
+       
 
 
 class CategoryTestCase(TestCase):
