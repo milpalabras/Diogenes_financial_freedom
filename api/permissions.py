@@ -12,3 +12,16 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
 
         # Write permissions are only allowed to the owner of the snippet.
         return obj.owner == request.user
+    
+class HasToken(permissions.BasePermission):
+    '''
+    Custom permission to only allow owners of an object with a token to make CRUD operations.
+    '''
+    
+    def has_object_permission(self, request, view, obj):
+               
+
+        # Write permissions are only allowed to the owner of the snippet.
+        return obj.token == request.user.token
+
+    

@@ -6,7 +6,9 @@ from accounting_records.models import Account, Category, Records, MethodOfPaymen
 from api.serializers import AccountSerializer, CategorySerializer, RecordsSerializer, MethodOfPaymentSerializer, UserSerializer
 from django.contrib.auth.models import User
 from rest_framework import permissions
-from api.permissions import IsOwnerOrReadOnly
+from api.permissions import IsOwnerOrReadOnly, HasToken
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
 
 # Create your views here.
 
@@ -15,7 +17,10 @@ from api.permissions import IsOwnerOrReadOnly
 class AccountList(generics.ListCreateAPIView):
     queryset = Account.objects.all()
     serializer_class = AccountSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticated]    
+    
+    
+    
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -89,3 +94,16 @@ def api_root(request, format=None):
         'methodofpayment': reverse('methodofpayment-list', request=request, format=format),
         'users': reverse('user-list', request=request, format=format),
     })
+
+class CustomDiogenesAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data,
+                                           context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({
+            'token': token.key,
+            'user_id': user.pk,
+            'username': user.username,
+        })

@@ -17,7 +17,7 @@ class DiogenesModel(models.Model):
 
 class Account(DiogenesModel):
     '''Account model for save the accounts of the user'''    
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, blank=False, null=False)
     class AccountType (models.TextChoices):
         GENERAL = 'GRAL', _('General')
         EFECTIVO ='EFEC', _('Efectivo')
